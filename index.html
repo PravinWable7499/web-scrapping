@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Company Overview Dashboard</title>
+
+    <!-- Select2 CDN for searchable dropdown -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            padding: 40px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        #companyDetails {
+            margin-top: 30px;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+
+        .key {
+            font-weight: bold;
+            width: 250px;
+            color: #2563eb;
+        }
+
+        .value {
+            flex: 1;
+            word-break: break-word;
+        }
+
+        a {
+            color: #16a34a;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Company Overview Dashboard</h2>
+
+<select id="companySelect" style="width:400px;"></select>
+
+<div id="companyDetails" style="display:none;"></div>
+
+<script>
+
+let companies = [];
+
+// Fetch JSON Data
+fetch("companies2.json")
+    .then(response => response.json())
+    .then(data => {
+        companies = data;
+        populateDropdown();
+    });
+
+function populateDropdown() {
+    const dropdown = document.getElementById("companySelect");
+
+    companies.forEach((company, index) => {
+        let option = document.createElement("option");
+        option.value = index;
+        option.text = company.company_name;
+        dropdown.appendChild(option);
+    });
+
+    // Activate searchable dropdown
+    $('#companySelect').select2({
+        placeholder: "Search and Select Company"
+    });
+
+    $('#companySelect').on('change', function () {
+        showCompanyData(this.value);
+    });
+}
+
+function showCompanyData(index) {
+
+    const container = document.getElementById("companyDetails");
+    container.innerHTML = "";
+
+    if (index === "") {
+        container.style.display = "none";
+        return;
+    }
+
+    const company = companies[index];
+
+    for (let key in company) {
+
+        let row = document.createElement("div");
+        row.className = "row";
+
+        let keyDiv = document.createElement("div");
+        keyDiv.className = "key";
+        keyDiv.innerText = formatKey(key);
+
+        let valueDiv = document.createElement("div");
+        valueDiv.className = "value";
+
+        // If value is URL
+        if (typeof company[key] === "string" && company[key].startsWith("http")) {
+            valueDiv.innerHTML = `<a href="${company[key]}" target="_blank">${company[key]}</a>`;
+        } else {
+            valueDiv.innerText = company[key];
+        }
+
+        row.appendChild(keyDiv);
+        row.appendChild(valueDiv);
+        container.appendChild(row);
+    }
+
+    container.style.display = "block";
+}
+
+// Convert snake_case to Proper Text
+function formatKey(key) {
+    return key
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, l => l.toUpperCase());
+}
+
+</script>
+
+</body>
+</html>
