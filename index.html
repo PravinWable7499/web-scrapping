@@ -1,40 +1,388 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Company Overview</title>
-
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- jQuery + Select2 -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    <!-- XLSX Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-
-    <!-- External CSS -->
-    <link rel="stylesheet" href="style.css">
+  <title>Company Dashboard</title>
+  <!-- css -->
+  <link rel="stylesheet" href="style.css" />
+  <!-- bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- font-awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+    integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- horizontal bar -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <!-- line bar -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 
-<body>
+<!-- <body>
+    <div class="container-fluid">
+      <div class="row">
+        <button id="sidebarToggle" class="btn btn-primary m-2">
+☰
+</button> -->
+<!-- Sidebar -->
+<!-- <h2>Company</h2>
 
-<h2>Company Overview</h2>
+  <div class="menu active">Dashboard</div> -->
+<input type="checkbox" id="toggler">
 
-<div class="top-section">
-    <select id="companySelect"></select>
+<div class="container-div">
+
+  <aside id="sidebar">
+    <label for="toggler" class="toggle-btn ms-2"><b>☰</b></label>
+
+    <ul class="sidebar-nav ">
+
+      <li>
+        <a class="sidebar-link" href="#">
+
+          <i class="fa-solid fa-building fa-2x icon-sidebar"></i>
+          <span> <select class="select-options" id="companyFilter">
+              <option value="">Select Company</option>
+            </select></span>
+        </a>
+
+      </li>
+
+      <li>
+        <a class="sidebar-link" href="#">
+          <i class="fa-solid fa-globe fa-2x icon-sidebar"></i>
+          <span><select class="select-options" id="typeFilter">
+
+              <option value="">Select Type</option>
+            </select></span>
+        </a>
+      </li>
+
+      <li>
+        <a class="sidebar-link" href="#">
+          <i class="fa-solid fa-industry fa-2x icon-sidebar"></i>
+          <span> <select id="domainFilter" class="select-options">
+              <option value="">Website Type</option>
+              <option value=".com">.com</option>
+              <option value=".in">.in</option>
+              <option value=".org">.org</option>
+              <option value=".co.in">.co.in</option>
+              <option value=".io">.io</option>
+            </select></span>
+        </a>
+      </li>
+      <li>
+        <a class="sidebar-link" href="#Show-graph">
+
+          <i class="fa-solid fa-chart-line fa-2x icon-sidebar"></i>
+          <span>
+
+
+            <select class="select-options">
+              <option value="">Show graphs</option>
+            </select>
+          </span>
+        </a>
+      </li>
+
+
+
+    </ul>
+
+  </aside>
+
+
+
+  <!-- Main -->
+  <div class=" px-3 main-content" id="">
+    <!-- search -->
+    <div class="row  p-3">
+      <div class="col-lg-7 col-md-6 col-xl-8 col-5 px-3">
+        <h1 class="title">Company Dashboard</h1>
+      </div>
+      <div class="col-lg-5 col-md-6 col-xl-4 col-7 px-3" id="search">
+        <form role="search" method="get" action="" onsubmit="event.preventDefault(); runSearch();">
+          <label class="screen-reader-text" for="site-search">Search</label>
+
+          <div class="input-container">
+            <input id="site-search" re type="search" class="search-input" name="s" placeholder="Search"
+              autocomplete="off" />
+
+            <button type="button" class="search-submit" aria-label="Submit search" onclick="runSearch()">
+              <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="kpi-groups">
+      <!-- Company Type -->
+      <div class="dropdown kpi-box">
+        <!-- Company Type Button -->
+        <h2 class="dropdown-toggle d-flex align-items-center justify-content-between" data-bs-toggle="dropdown"
+          style="cursor: pointer">
+
+          <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-building-circle-check fa-2x text-primary"></i>
+            <span class="me-5 h5"><b>Company Type</b></span>
+          </div>
+
+          <!-- Custom dropdown icon -->
+          <i class="fa-solid fa-angle-down fa-lg kpi-icon"></i>
+
+        </h2>
+
+        <div class="kpi-pill text-center">
+          <h3 class="count pb-2 display-6 fw-bold" id="total" onclick="showCompanyList('total')"
+            style="cursor:pointer;">
+          </h3>
+
+          <h2 class="kpi-title text-muted">Total Companies</h2>
+
+        </div>
+
+        <!-- Dropdown Items -->
+        <div class="dropdown-menu p-3">
+          <div class="row g-4">
+            <div class="col-lg-3 col-md-6 col-xl-3 col-12 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('pvtltd')">
+                <h2 class="kpi-title pb-3">Pvt Ltd</h2>
+                <h3 id="pvtltd"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-12 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('Pvt')">
+                <h2 class="kpi-title pb-3">Pvt</h2>
+                <h3 id="Pvt"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-12 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('llp')">
+                <h2 class="kpi-title pb-3" class="kpi-pill">LLP</h2>
+                <h3 id="llp"></h3>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-xl-3 col-12 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('ltd')">
+                <h2 class="kpi-title pb-3">Ltd</h2>
+                <h3 id="ltd"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-12 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('otherType')">
+                <h2 class="kpi-title pb-3">other</h2>
+                <h3 id="otherType"></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Website Type -->
+      <div class="dropdown kpi-box">
+        <!-- website Type Button -->
+
+        <h2 class="dropdown-toggle d-flex align-items-center justify-content-between" data-bs-toggle="dropdown"
+          style="cursor:pointer">
+
+          <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-globe fa-2x text-primary"></i>
+            <span class="me-5 h5"><b>Website Type</b></span>
+          </div>
+
+          <i class="fa-solid fa-angle-down fa-lg kpi-icon"></i>
+
+        </h2>
+
+        <div class="kpi-pill text-center">
+          <h3 class="count pb-2 display-6 fw-bold" id="totalWebsites" onclick="showCompanyList('totalWebsites')"></h3>
+          <h2 class="kpi-title text-muted">Total Website</h2>
+        </div>
+
+        <!-- Dropdown Items -->
+        <div class="dropdown-menu p-3">
+          <div class="row g-4">
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('com')">
+                <h2 class="kpi-title pb-3">.COM</h2>
+                <h3 id="com"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('in')">
+                <h2 class="kpi-title pb-3">.IN</h2>
+                <h3 id="in"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('org')">
+                <h2 class="kpi-title pb-3" class="kpi-pill">.ORG</h2>
+                <h3 id="org"></h3>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('coin')">
+                <h2 class="kpi-title pb-3">.co.in</h2>
+                <h3 id="coin"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('io')">
+                <h2 class="kpi-title pb-3">.io</h2>
+                <h3 id="io"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('other')">
+                <h2 class="kpi-title pb-3">other</h2>
+                <h3 id="other"></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Type -->
+      <div class="dropdown kpi-box">
+        <!-- Email Type Button -->
+
+        <h2 class="dropdown-toggle d-flex align-items-center justify-content-between" data-bs-toggle="dropdown"
+          style="cursor:pointer">
+
+          <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-envelope fa-2x text-primary"></i>
+            <span class="me-5 h5"><b>Email Type</b></span>
+          </div>
+
+          <i class="fa-solid fa-angle-down fa-lg kpi-icon"></i>
+
+        </h2>
+
+        <div class="kpi-pill text-center" onclick="showCompanyList('totalemail')">
+          <h3 class="count pb-2 display-6 fw-bold" id="totalemail"></h3>
+          <h2 class="kpi-title text-muted">Total Email Type</h2>
+        </div>
+
+        <!-- Dropdown Items -->
+        <div class="dropdown-menu p-3">
+          <div class="row g-4">
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('gmail')">
+                <h2 class="kpi-title pb-3">Gmail</h2>
+                <h3 id="gmail"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('yahoo')">
+                <h2 class="kpi-title pb-3">Yahoo</h2>
+                <h3 id="yahoo"></h3>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('outlook')">
+                <h2 class="kpi-title pb-3" class="kpi-pill">Outlook</h2>
+                <h3 id="outlook"></h3>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-xl-3 col-6 px-3">
+              <div class="kpi-pill py-3 shadow-lg" onclick="showCompanyList('companymail')">
+                <h2 class="kpi-title pb-3">Company Mail</h2>
+                <h3 id="companymail"></h3>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Website Status -->
+      <div class="kpi-box">
+        <h2 class="d-flex align-items-center justify-content-between">
+
+          <div class="d-flex align-items-center gap-3">
+            <i class="fa-solid fa-circle-xmark fa-2x text-primary"></i>
+            <span class="me-5 h5"><b>Website Status</b></span>
+          </div>
+
+        </h2>
+
+        <div class="kpi-pill text-center" onclick="showCompanyList('no')">
+          <h3 class="pb-2 display-6 fw-bold" id="no"></h3>
+          <h2 class="kpi-title text-muted">Website Not Available</h2>
+        </div>
+      </div>
+    </div>
+    <!-- specific city info -->
+    <div class="row my-5 city-midc-wrapper">
+
+      <!-- LEFT : CITY PERFORMANCE -->
+      <div class="col-lg-8 col-md-12 col-xl-8 col-12  px-3 pb-5">
+        <div class="city-panel">
+
+          <div class="panel-header">
+            <h3>City & Zone Performance</h3>
+          </div>
+
+          <div id="cityCards" class="city-grid"></div>
+
+        </div>
+
+      </div>
+      <!-- RIGHT : MIDC ZONES -->
+      <div class="col-lg-4 col-md-12 col-xl-4 col-12   px-3">
+        <div class="midc-panel">
+
+          <div class="panel-header">
+            <h3>Core MIDC Zones</h3>
+            <h6 class="pb-2 text-primary">in Chh. Sambhajinagar</h6>
+          </div>
+
+          <div id="midcList" class="midc-list"></div>
+
+        </div>
+      </div>
+    </div>
+    <!-- show graphs -->
+    <div class="row  " id="Show-graph">
+      <h1>Graphs</h1>
+      <div class="col-lg-8 col-md-12 col-xl-8 col-12 my-4  px-3">
+        <div id="chartContainer"></div>
+      </div>
+
+      <div class="col-lg-4 col-md-12 col-xl-4 col-12  my-4 px-3">
+        <div class="viz"></div>
+        <div class="tooltip"></div>
+
+      </div>
+    </div>
+
+
+    <!-- Details -->
+    <div class="details-box full-width-details my-5 " id="details">
+      <h3>Company Details</h3>
+      <div id="details">
+        <p>Select a company to view details</p>
+      </div>
+    </div>
+  </div>
+
 </div>
-
-<div id="loader">
-    <div class="spinner"></div>
-</div>
-
-<div id="companyDetails"></div>
-
-<!-- External JS -->
+<!-- script link -->
 <script src="script.js"></script>
-
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<!-- linebar js -->
+<script src="linebar.js"></script>
+<!-- horizontal bar -->
+<script src="horizontalbBar.js"></script>
+<!-- bootstrap link -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
